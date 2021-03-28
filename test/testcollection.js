@@ -3,7 +3,7 @@ require('dotenv').config({path:envPath});
 let chai = require('chai');
 let chaiHttp = require('chai-http');
 let server = require('../server');
-let db = require('../db')();
+let User = require('../Users');
 chai.should();
 
 chai.use(chaiHttp);
@@ -16,12 +16,15 @@ let login_details = {
 
 describe('Register, Login and Call Test Collection with Basic Auth and JWT Auth', () => {
     beforeEach((done) => { //Before each test initialize the database to empty
-        db.userList = [];
+        //db.userList = [];
         done();
     })
 
     after((done) => { //after this test suite empty the database
-        db.userList = [];
+        //db.userList = [];
+        User.deleteOne({ name: 'test'}, function(err, user) {
+            if (err) throw err;
+        });
         done();
     })
 
@@ -58,7 +61,7 @@ describe('Register, Login and Call Test Collection with Basic Auth and JWT Auth'
                 })
         })
     });
-
+/*
     describe('/testcollection fail auth', () => {
         it('delete requires basic auth failed login', (done) => {
             chai.request(server)
@@ -71,4 +74,6 @@ describe('Register, Login and Call Test Collection with Basic Auth and JWT Auth'
                 })
         });
     });
+
+ */
 });

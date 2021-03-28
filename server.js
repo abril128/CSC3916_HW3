@@ -5,14 +5,13 @@ Description: Web API scaffolding for Movie API
  */
 
 const express = require('express');
-const http = require('http');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const authController = require('./auth');
 const authJwtController = require('./auth_jwt');
-db = require('./db')(); //hack
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+const User = require('./Users');
 
 const app = express();
 app.use(cors());
@@ -45,31 +44,45 @@ router.post('/signup', function(req, res) {
     if (!req.body.username || !req.body.password) {
         res.json({success: false, msg: 'Please include both username and password to signup.'})
     } else {
-        const newUser = {
-            username: req.body.username,
-            password: req.body.password
-        };
+        const user = new User();
+        user.name = req.body.name;
+        user.username = req.body.username;
+        user.password = req.body.password;
 
-        db.save(newUser); //no duplicate checking
-        res.json({success: true, msg: 'Successfully created new user.'})
+        user.save(function(err){
+            if (err) {
+                if (err.code == 11000)
+                    return res.json({ success: false, message: 'A user with that username already exists.'});
+                else
+                    return res.json(err);
+            }
+
+            res.json({success: true, msg: 'Successfully created new user.'})
+        });
     }
 });
 
 router.post('/signin', function (req, res) {
-    const user = db.findOne(req.body.username);
+    const userNew = new User();
+    userNew.username = req.body.username;
+    userNew.password = req.body.password;
 
-    if (!user) {
-        res.status(401).send({success: false, msg: 'Authentication failed. User not found.'});
-    } else {
-        if (req.body.password == user.password) {
-            const userToken = {id: user.id, username: user.username};
-            const token = jwt.sign(userToken, process.env.SECRET_KEY);
-            res.json ({success: true, token: 'JWT ' + token});
+    User.findOne({ username: userNew.username }).select('name username password').exec(function(err, user) {
+        if (err) {
+            res.send(err);
         }
-        else {
-            res.status(401).send({success: false, msg: 'Authentication failed.'});
-        }
-    }
+
+        user.comparePassword(userNew.password, function(isMatch) {
+            if (isMatch) {
+                const userToken = {id: user.id, username: user.username};
+                const token = jwt.sign(userToken, process.env.SECRET_KEY);
+                res.json ({success: true, token: 'JWT ' + token});
+            }
+            else {
+                res.status(401).send({success: false, msg: 'Authentication failed.'});
+            }
+        })
+    })
 });
 
 router.route('/testcollection')
