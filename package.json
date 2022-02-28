@@ -1,14 +1,14 @@
 {
-  "name": "csc3916_hw2",
+  "name": "csc3916_hw3",
   "version": "1.0.0",
-  "description": "Web API 3916 Homework 2",
+  "description": "Web API 3916 Homework 3",
   "main": "server.js",
- "scripts": {
+  "scripts": {
     "test": "mocha --timeout 10000 --exit"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/abril128/CSC3916_HW2.git"
+    "url": "git+https://github.com/abril128/CSC3916_HW3.git"
   },
   "keywords": [
     "Movie"
@@ -16,10 +16,11 @@
   "author": "Abril Ramirez",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/abril128/CSC3916_HW2/issues"
+    "url": "https://github.com/abril128/CSC3916_HW3/issues"
   },
-  "homepage": "https://github.com/abril128/CSC3916_HW2#readme",
+  "homepage": "https://github.com/abril128/CSC3916_HW3#readme",
   "dependencies": {
+    "bcrypt-nodejs": "^0.0.3",
     "body-parser": "^1.19.2",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
@@ -27,11 +28,12 @@
     "express": "^4.17.3",
     "http": "^0.0.1-security",
     "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.2.3",
     "passport": "^0.5.2",
     "passport-http": "^0.3.0",
     "passport-jwt": "^4.0.0"
-    },
-   "devDependencies": {
+  },
+  "devDependencies": {
     "chai": "^4.3.6",
     "chai-http": "^4.3.0",
     "mocha": "^8.3.0"
