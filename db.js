@@ -42,7 +42,7 @@ module.exports = function () {
          * Delete a movie with the given id.
          */
         remove: function (id) {
-            var found = 0;
+            let found = 0;
             this.userList = this.userList.filter(function (element) {
                 if (element.id === id) {
                     found = 1;
