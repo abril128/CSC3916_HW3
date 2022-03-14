@@ -4,27 +4,28 @@ File: Server.js
 Description: Web API scaffolding for Movie API
  */
 
-var express = require('express');
+const express = require('express');
 //var http = require('http');
-var bodyParser = require('body-parser');
-var passport = require('passport');
-var authController = require('./auth');
-var authJwtController = require('./auth_jwt');
-var jwt = require('jsonwebtoken');
-var cors = require('cors');
-var User = require('./Users');
+const bodyParser = require('body-parser');
+const passport = require('passport');
+const authController = require('./auth');
+const authJwtController = require('./auth_jwt');
+const jwt = require('jsonwebtoken');
+const cors = require('cors');
+const User = require('./Users');
 //
-var app = express();
+const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 //
 app.use(passport.initialize());
 //
-var router = express.Router();
+const router = express.Router();
+
 //
 function getJSONObjectForMovieRequirement(req) {
-    var json = {
+    const json = {
         headers: "No headers",
         key: process.env.UNIQUE_KEY,
         body: "No body"
@@ -64,7 +65,7 @@ router.post('/signup', function(req, res) {
 });
 
 router.post('/signin', function (req, res) {
-    var userNew = new User();
+    const userNew = new User();
     userNew.username = req.body.username;
     userNew.password = req.body.password;
 
@@ -93,7 +94,7 @@ router.route('/movie') // testcollection
         if (req.get('Content-Type')) {
             res = res.type(req.get('Content-Type'));
         }
-        var o = getJSONObjectForMovieRequirement(req);
+        const o = getJSONObjectForMovieRequirement(req);
         res.json(o);
     })
     //========end get start post ==============================
@@ -103,7 +104,7 @@ router.route('/movie') // testcollection
         if (req.get('Content-Type')) {
             res = res.type(req.get('Content-Type'));
         }
-        var o = getJSONObjectForMovieRequirement(req);
+        const o = getJSONObjectForMovieRequirement(req);
         res.json(o);
     })
     // ==============end post ===================================
@@ -113,8 +114,8 @@ router.route('/movie') // testcollection
             if (req.get('Content-Type')) {
                 res = res.type(req.get('Content-Type'));
             }
-            var o = getJSONObjectForMovieRequirement(req);
-            res.json(o);
+        const o = getJSONObjectForMovieRequirement(req);
+        res.json(o);
         }
     )
     .put(authJwtController.isAuthenticated, function(req, res) {
@@ -123,8 +124,8 @@ router.route('/movie') // testcollection
             if (req.get('Content-Type')) {
                 res = res.type(req.get('Content-Type'));
             }
-            var o = getJSONObjectForMovieRequirement(req);
-            res.json(o);
+        const o = getJSONObjectForMovieRequirement(req);
+        res.json(o);
         }
     );
 //========================== end movie ======================
