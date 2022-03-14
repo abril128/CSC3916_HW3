@@ -85,48 +85,48 @@ router.post('/signin', function (req, res) {
     })
 });
 //============ movie =======================
-// router.route('/movie') // testcollection
-//     //=========get===============
-//     .get(function (req, res, next) {
-//         console.log(req.body);
-//         res = res.status(200);
-//         if (req.get('Content-Type')) {
-//             res = res.type(req.get('Content-Type'));
-//         }
-//         var o = getJSONObjectForMovieRequirement(req);
-//         res.json(o);
-//     })
-//     //========end get start post ==============================
-//     .post(function (req, res, next) {
-//         console.log(req.body);
-//         res = res.status(200);
-//         if (req.get('Content-Type')) {
-//             res = res.type(req.get('Content-Type'));
-//         }
-//         var o = getJSONObjectForMovieRequirement(req);
-//         res.json(o);
-//     })
-//     // ==============end post ===================================
-//     .delete(authController.isAuthenticated, function(req, res) {
-//             console.log(req.body);
-//             res = res.status(200);
-//             if (req.get('Content-Type')) {
-//                 res = res.type(req.get('Content-Type'));
-//             }
-//             var o = getJSONObjectForMovieRequirement(req);
-//             res.json(o);
-//         }
-//     )
-//     .put(authJwtController.isAuthenticated, function(req, res) {
-//             console.log(req.body);
-//             res = res.status(200);
-//             if (req.get('Content-Type')) {
-//                 res = res.type(req.get('Content-Type'));
-//             }
-//             var o = getJSONObjectForMovieRequirement(req);
-//             res.json(o);
-//         }
-//     );
+router.route('/movie') // testcollection
+    //=========get===============
+    .get(function (req, res, next) {
+        console.log(req.body);
+        res = res.status(200);
+        if (req.get('Content-Type')) {
+            res = res.type(req.get('Content-Type'));
+        }
+        var o = getJSONObjectForMovieRequirement(req);
+        res.json(o);
+    })
+    //========end get start post ==============================
+    .post(function (req, res, next) {
+        console.log(req.body);
+        res = res.status(200);
+        if (req.get('Content-Type')) {
+            res = res.type(req.get('Content-Type'));
+        }
+        var o = getJSONObjectForMovieRequirement(req);
+        res.json(o);
+    })
+    // ==============end post ===================================
+    .delete(authController.isAuthenticated, function(req, res) {
+            console.log(req.body);
+            res = res.status(200);
+            if (req.get('Content-Type')) {
+                res = res.type(req.get('Content-Type'));
+            }
+            var o = getJSONObjectForMovieRequirement(req);
+            res.json(o);
+        }
+    )
+    .put(authJwtController.isAuthenticated, function(req, res) {
+            console.log(req.body);
+            res = res.status(200);
+            if (req.get('Content-Type')) {
+                res = res.type(req.get('Content-Type'));
+            }
+            var o = getJSONObjectForMovieRequirement(req);
+            res.json(o);
+        }
+    );
 //========================== end movie ======================
 app.use('/', router);
 app.listen(process.env.PORT || 8080);
