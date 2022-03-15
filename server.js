@@ -46,7 +46,7 @@ router.post('/signup', function(req, res) {
     if (!req.body.username || !req.body.password) {
         res.json({success: false, msg: 'Please include both username and password to signup.'})
     } else {
-        var user = new User();
+        const user = new User();
         user.name = req.body.name;
         user.username = req.body.username;
         user.password = req.body.password;
@@ -75,8 +75,8 @@ router.post('/signin', function (req, res) {
        }
        user.comparePassword(userNew.password, function(isMatch){
            if (isMatch){
-               var userToken = { id: user.id, username: user.username };
-               var token = jwt.sign(userToken, process.env.SECRET_KEY);
+               const userToken = {id: user.id, username: user.username};
+               const token = jwt.sign(userToken, process.env.SECRET_KEY);
                res.json ({success: true, token: 'JWT ' + token});
            }
            else {
@@ -86,7 +86,7 @@ router.post('/signin', function (req, res) {
     })
 });
 //============ movie =======================
-router.route('/movie') // testcollection
+router.route('/movie') // test-collection
     //=========get===============
     .get(function (req, res, next) {
         console.log(req.body);

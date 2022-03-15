@@ -38,9 +38,10 @@ module.exports = function () {
                 return this.userList;
             }
         },
-        /*
-         * Delete a movie with the given id.
-         */
+
+         //Delete a movie with the given id.
+
+
         remove: function (id) {
             let found = 0;
             this.userList = this.userList.filter(function (element) {
@@ -53,9 +54,9 @@ module.exports = function () {
             });
             return found;
         },
-        /*
-         * Update a movie with the given id
-         */
+
+         //Update a movie with the given id
+
         update: function (id, user) {
             const userIndex = this.userList.findIndex(function (element) {
                 return element.id === id;
