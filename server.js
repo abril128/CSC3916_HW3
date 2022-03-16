@@ -13,6 +13,7 @@ const authJwtController = require('./auth_jwt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const User = require('./Users');
+const Movie = require('./Movies')
 //
 const app = express();
 app.use(cors());
@@ -23,7 +24,7 @@ app.use(passport.initialize());
 //
 const router = express.Router();
 
-//
+
 function getJSONObjectForMovieRequirement(req) {
     const json = {
         headers: "No headers",
@@ -87,8 +88,26 @@ router.post('/signin', function (req, res) {
 });
 //============ movie =======================
 router.route('/movie') // test-collection
+
     //=========get===============
     .get(function (req, res, next) {
+        // Movie.find({}, function(err, movies){
+        //     if (err) {
+        //         return res.status(400).json({ success: false, error: err })
+        //     }
+        //     console.log(movies);
+        // })
+        // Movie.findOne({title: ""}, function(err, movies){
+        //     if (err) {
+        //         return res.status(400).json({ success: false, error: err })
+        //     }
+        //     if (!movies){
+        //         return res
+        //             .status(404)
+        //             .json({ success: false, error: `Movie not found` })
+        //     }
+           // console.log(movies);
+       // })
         console.log(req.body);
         res = res.status(200);
         if (req.get('Content-Type')) {
@@ -99,7 +118,9 @@ router.route('/movie') // test-collection
     })
     //========end get start post ==============================
     .post(function (req, res, next) {
+
         console.log(req.body);
+
         res = res.status(200);
         if (req.get('Content-Type')) {
             res = res.type(req.get('Content-Type'));
@@ -129,6 +150,9 @@ router.route('/movie') // test-collection
         }
     );
 //========================== end movie ======================
+
+//================================================================================================
+
 app.use('/', router);
 app.listen(process.env.PORT || 8080);
 module.exports = app; // for testing only

@@ -4,6 +4,7 @@ const ExtractJwt = require('passport-jwt').ExtractJwt;
 const User = require('./Users');
 
 const opts = {};
+
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme("jwt");
 opts.secretOrKey = process.env.SECRET_KEY;
 
