@@ -45,7 +45,6 @@ describe('Register, Login and Call Test Collection with Basic Auth and JWT Auth'
                         .end((err, res) => {
                             res.should.have.status(200);
                             res.body.should.have.property('token');
-
                             let token = res.body.token;
                             console.log(token);
                             done();
