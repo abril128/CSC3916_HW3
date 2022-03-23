@@ -108,13 +108,13 @@ router.route('/movie') // test-collection
             }
            console.log(movies);
        })
-       // console.log(req.body);
-       //  res = res.status(200);
-       //  if (req.get('Content-Type')) {
-       //      res = res.type(req.get('Content-Type'));
-       //  }
-       //  const o = getJSONObjectForMovieRequirement(req);
-       //  res.json(o);
+       //console.log(req.body);
+        res = res.status(200);
+        if (req.get('Content-Type')) {
+            res = res.type(req.get('Content-Type'));
+        }
+        const o = getJSONObjectForMovieRequirement(req);
+        res.json(o);
     })
     //========end get start post ==============================
     .post(function (req, res, next) {
