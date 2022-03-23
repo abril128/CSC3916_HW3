@@ -119,11 +119,11 @@ router.route('/movie') // test-collection
     //========end get start post ==============================
     .post(function (req, res, next) {
 
-        // Movie.save(function (err) {
-        //     if (err) throw err;
-        //
-        //     console.log("Movie created!");
-        // })
+        Movie.save(function (err) {
+            if (err) throw err;
+
+            console.log("Movie created!");
+        })
 
 
         res = res.status(200);
@@ -177,18 +177,6 @@ router.route('/movie') // test-collection
         res.json(o);
     });
 //========================== end movie ======================
-//     .get(function (req, res, next) {
-//         console.log("GET request called");
-//         res.end();
-//     })
-//     .post(function (req, res, next) {
-//         console.log("POST request called");
-//         res.end();
-//     })
-//     .put(function (req, res, next) {
-//         console.log("PUT request called");
-//         res.end();
-//     });
 
 //================================================================================================
 
