@@ -28,7 +28,7 @@ const router = express.Router();
 function getJSONObjectForMovieRequirement(req) {
     const json = {
         headers: "No headers",
-        key: process.env.SECRET_KEY,
+        key: process.env.UNIQUE_KEY,
         body: "No body"
     };
 
@@ -87,7 +87,7 @@ router.post('/signin', function (req, res) {
     })
 });
 //============ movie =======================
-router.route('/movie') // test-collection
+router.route('/movies') // test-collection
 
     // //=========get===============
     .get(function (req, res, next) {
@@ -108,16 +108,16 @@ router.route('/movie') // test-collection
             }
            console.log(movies);
        })
-       //console.log(req.body);
-        res = res.status(200);
-        if (req.get('Content-Type')) {
-            res = res.type(req.get('Content-Type'));
-        }
-        const o = getJSONObjectForMovieRequirement(req);
-        res.json(o);
+       // console.log(req.body);
+       //  res = res.status(200);
+       //  if (req.get('Content-Type')) {
+       //      res = res.type(req.get('Content-Type'));
+       //  }
+       //  const o = getJSONObjectForMovieRequirement(req);
+       //  res.json(o);
     })
-    //========end get start post ==============================
-    .post(function (req, res, next) {
+    // //========end get start post ==============================
+     .post(function (req, res, next) {
 
         Movie.save(function (err) {
             if (err) throw err;
@@ -125,58 +125,70 @@ router.route('/movie') // test-collection
             console.log("Movie created!");
         })
 
+        //
+        // res = res.status(200);
+        // if (req.get('Content-Type')) {
+        //     res = res.type(req.get('Content-Type'));
+        // }
+        // const o = getJSONObjectForMovieRequirement(req);
+        // res.json(o);
+     })
 
-        res = res.status(200);
-        if (req.get('Content-Type')) {
-            res = res.type(req.get('Content-Type'));
-        }
-        const o = getJSONObjectForMovieRequirement(req);
-        res.json(o);
-    })
-
-    // ==============end post ===================================
-    .delete(authController.isAuthenticated, function(req, res) {
-        // Movie.find({title: ""}, function (err, movies) {
-        //         if (err) throw err;
-        //
-        //
-        //         Movie.remove(function (err) {
-        //             if (err) throw err;
-        //
-        //             console.log("Move Deleted!");
-        //             console.log(movies);
-        //         })
+    // // ==============end post ===================================
+     .delete(authController.isAuthenticated, function(req, res) {
+        Movie.find({title: ""}, function (err, movies) {
+                if (err) throw err;
 
 
-                    console.log(req.body);
-                    res = res.status(200);
-                    if (req.get('Content-Type')) {
-                        res = res.type(req.get('Content-Type'));
-                    }
-                const o = getJSONObjectForMovieRequirement(req);
-                res.json(o);
-           // }
-       // )
-    })
-    .put(authJwtController.isAuthenticated, function(req, res) {
-        // Movie.findOneAndUpdate({title:''}, {title:''},function (err, movies) {
-        //     if (err) throw err;
-        //
-        //     console.log(movies);
-        //
-        //
-        // });
+                Movie.remove(function (err) {
+                    if (err) throw err;
+
+                    console.log("Move Deleted!");
+                    console.log(movies);
+                })
 
 
-            console.log(req.body);
-            res = res.status(200);
-            if (req.get('Content-Type')) {
-                res = res.type(req.get('Content-Type'));
+                  //  console.log(req.body);
+                //     res = res.status(200);
+                //     if (req.get('Content-Type')) {
+                //         res = res.type(req.get('Content-Type'));
+                //     }
+                // const o = getJSONObjectForMovieRequirement(req);
+                // res.json(o);
             }
-        const o = getJSONObjectForMovieRequirement(req);
-        res.json(o);
+        )
+     })
+     .put(authJwtController.isAuthenticated, function(req, res) {
+        Movie.findOneAndUpdate({title:''}, {title:''},function (err, movies) {
+            if (err) throw err;
+
+            console.log(movies);
+
+
+        });
+
+
+            //console.log(req.body);
+        //     res = res.status(200);
+        //     if (req.get('Content-Type')) {
+        //         res = res.type(req.get('Content-Type'));
+        //     }
+        // const o = getJSONObjectForMovieRequirement(req);
+        // res.json(o);
     });
 //========================== end movie ======================
+//     .get(function (req, res, next) {
+//         console.log("GET request called");
+//         res.end();
+//     })
+//     .post(function (req, res, next) {
+//         console.log("POST request called");
+//         res.end();
+//     })
+//     .put(function (req, res, next) {
+//         console.log("PUT request called");
+//         res.end();
+//     });
 
 //================================================================================================
 
