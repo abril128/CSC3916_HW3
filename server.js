@@ -13,7 +13,7 @@ const authJwtController = require('./auth_jwt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const User = require('./Users');
-const Movie = require('./Movies')
+const Movies = require('./Movies')
 //
 const app = express();
 app.use(cors());
@@ -91,13 +91,11 @@ router.route('/movies') // test-collection
 
     // // //=========get===============
      .get(function (req, res, next) {
-        Movie.find({}, function(err, movies){
-            if (err) {
-                return res.status(400).json({ success: false, error: err })
-            }
-            console.log(movies);
-        })
-        Movie.findOne({title: ""}, function(err, movies){
+        Movies.find()
+            .then(movies => res.json(movies))
+            .catch(err => res.status(400).json('Error: ' +err));
+
+        Movies.findOne({title: ""}, function(err, movies){
             if (err) {
                 return res.status(400).json({ success: false, error: err })
             }
@@ -119,10 +117,21 @@ router.route('/movies') // test-collection
     // // //========end get start post ==============================
       .post(function (req, res, next) {
     //
-        Movie.save(function (err) {
-            if (err) throw err;
+        Movies.save(function (err, Movies) {
+            const title = req.body.title;
+            const releaseYear = req.body.releaseYear;
+            const genre = req.body.genre;
+            const actors = req.body.actors;
+        const newMovie = new Movies({
+            title,
+            releaseYear,
+            genre,
+            actors,
+        });
+        newMovie.save()
+            .then(() => res.json('Movie Added!'))
+            .catch(err => res.status(400).json('Error: ' +err));
 
-            console.log("Movie created!");
         })
 
     //     //
@@ -136,11 +145,11 @@ router.route('/movies') // test-collection
 
     // // // ==============end post ===================================
       .delete(authController.isAuthenticated, function(req, res) {
-        Movie.find({title: ""}, function (err, movies) {
+        Movies.find({title: ""}, function (err, movies) {
                 if (err) throw err;
 
 
-                Movie.remove(function (err) {
+                Movies.remove(function (err) {
                     if (err) throw err;
 
                     console.log("Move Deleted!");
@@ -159,7 +168,7 @@ router.route('/movies') // test-collection
         )
      })
       .put(authJwtController.isAuthenticated, function(req, res) {
-        Movie.findOneAndUpdate({title:''}, {title:''},function (err, movies) {
+        Movies.findOneAndUpdate({title:''}, {title:''},function (err, movies) {
             if (err) throw err;
 
             console.log(movies);
