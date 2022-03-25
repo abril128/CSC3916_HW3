@@ -48,32 +48,9 @@ describe('Register, Login and Call Test Collection with Basic Auth and JWT Auth'
                             let token = res.body.token;
                             console.log(token);
                             done();
-                            //console.log('got token ' + token)
-                            //lets call a protected API
-                            // chai.request(server)
-                            //     .put('/test')
-                            //     .set('Authorization', token)
-                            //     .send({echo: ''})
-                            //     .end((err, res) => {
-                            //         res.should.have.status(200);
-                            //         res.body.body.should.have.property('echo');
-                            //         done();
-                            //     })
+
                         })
                 })
         })
     });
-
-    // describe('/test fail auth', () => {
-    //     it('delete requires basic auth failed login', (done) => {
-    //         chai.request(server)
-    //             .delete('/test')
-    //             .auth('cu_user', 'cu_rulez1')
-    //             .send({ echo: '' })
-    //             .end((err, res) => {
-    //                 res.should.have.status(401);
-    //                 done();
-    //             })
-    //     });
-    // });
 });

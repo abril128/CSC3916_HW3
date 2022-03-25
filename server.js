@@ -13,7 +13,7 @@ const authJwtController = require('./auth_jwt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const User = require('./Users');
-const Movies = require('./Movies')
+const Movie = require('./Movies')
 //
 const app = express();
 app.use(cors());
@@ -87,104 +87,75 @@ router.post('/signin', function (req, res) {
     })
 });
 //============ movie =======================
-router.route('/movies') // test-collection
-
-    // // //=========get===============
-     .get(function (req, res, next) {
-        Movies.find()
-            .then(movies => res.json(movies))
-            .catch(err => res.status(400).json('Error: ' +err));
-
-        Movies.findOne({title: ""}, function(err, movies){
-            if (err) {
-                return res.status(400).json({ success: false, error: err })
-            }
-            if (!movies){
-                return res
-                    .status(404)
-                    .json({ success: false, error: `Movie not found` })
-            }
-           console.log(movies);
-       })
-       // console.log(req.body);
-       //  res = res.status(200);
-       //  if (req.get('Content-Type')) {
-       //      res = res.type(req.get('Content-Type'));
-       //  }
-       //  const o = getJSONObjectForMovieRequirement(req);
-       //  res.json(o);
+router.route('/Movies')
+    .delete(authJwtController.isAuthenticated, function(req, res){
+        if(!req.body.title){
+            res.status(403).json({success:false, message: "Please provide a movie to be delete."});
+        }
+        else{
+            Movie.findOneAndDelete({title:req.body.title}, function(err, movie){
+                if (movie){
+                    res.status(200).json({success: true, message: "Found the movie!", Movie: movie});
+                }
+                else {
+                    res.status(404).json({success:false, message: "Movie was not found!"});
+                }
+            })
+        }
     })
-    // // //========end get start post ==============================
-      .post(function (req, res, next) {
-    //
-        Movies.save(function (err, Movies) {
-            const title = req.body.title;
-            const releaseYear = req.body.releaseYear;
-            const genre = req.body.genre;
-            const actors = req.body.actors;
-        const newMovie = new Movies({
-            title,
-            releaseYear,
-            genre,
-            actors,
-        });
-        newMovie.save()
-            .then(() => res.json('Movie Added!'))
-            .catch(err => res.status(400).json('Error: ' +err));
+    .put(authJwtController.isAuthenticated, function(req, res) {
+        if(!req.body.title|| !req.body.new_title){
+            res.status(403).json({SUCCESS:false, message: "Please provide a movie title to be updated along with the new title"})
+        }
+        else{
+            Movie.findOneAndUpdate({title:req.body.title}, {title :req.body.new_title}, function(err, movie){
+                if (movie) {
+                    res.status(200).json({success: true, message: "Found Movie"})
+                }
+                else {
+                    res.status(404).json({success: false, message: "Movie not found"});
+                }
+            })
+        }
+    })
+    .get(authJwtController.isAuthenticated,function(req, res) {
+        if(!req.body){
+            res.status(403).json({SUCCESS:false, message: "Please provide a movie to display"})
+        }
+        else{
+            Movie.find({title:req.body.title}).select("title year genre actorsName").exec(function(err, movie){
+                if (movie) {
+                    res.status(200).json({success: true, message: "Success! The Movie was found", Movie: movie})
+                }
+                else {
+                    res.status(404).json({success: false, message: "Movie not found"});
+                }
+            })
+        }
+    })
+    .post(authJwtController.isAuthenticated,function(req, res) {
+        if(!req.body.title || !req.body.year || !req.body.genre || !req.body.actorsName[0] || !req.body.actorsName[1] || !req.body.actorsName[2]) {
+            res.status(403).json({SUCCESS:false, message: "Error. Incorrect format "});
+        }
+        else{
+            var movie = new Movie();
+            movie.title = req.body.title;
+            movie.year = req.body.year;
+            movie.genre = req.body.genre;
+            movie.actorsName = req.body.actorsName;
 
-        })
+            movie.save(function(err){
+                if (err){
+                    if(err.code === 11000)
+                        return res.json({SUCCESS:false, MESSAGE: "Error. Movie already exists"});
+                    else
+                        return res.json(err);
+                }
+            })
+            res.json({SUCCESS:true, MESSAGE: "Movie Is Created."})
+        }
+    })
 
-    //     //
-    //     res = res.status(200);
-    //     if (req.get('Content-Type')) {
-    //         res = res.type(req.get('Content-Type'));
-    //     }
-    //     const o = getJSONObjectForMovieRequirement(req);
-    //     res.json(o);
-     })
-
-    // // // ==============end post ===================================
-      .delete(authController.isAuthenticated, function(req, res) {
-        Movies.find({title: ""}, function (err, movies) {
-                if (err) throw err;
-
-
-                Movies.remove(function (err) {
-                    if (err) throw err;
-
-                    console.log("Move Deleted!");
-                    console.log(movies);
-                })
-    //
-    //
-    //                 console.log(req.body);
-    //                 res = res.status(200);
-    //                 if (req.get('Content-Type')) {
-    //                     res = res.type(req.get('Content-Type'));
-    //                 }
-    //             const o = getJSONObjectForMovieRequirement(req);
-    //             res.json(o);
-           }
-        )
-     })
-      .put(authJwtController.isAuthenticated, function(req, res) {
-        Movies.findOneAndUpdate({title:''}, {title:''},function (err, movies) {
-            if (err) throw err;
-
-            console.log(movies);
-
-
-        });
-    //
-    //
-    //         console.log(req.body);
-    //         res = res.status(200);
-    //         if (req.get('Content-Type')) {
-    //             res = res.type(req.get('Content-Type'));
-    //         }
-    //     const o = getJSONObjectForMovieRequirement(req);
-    //     res.json(o);
-    });
 //========================== end movie ======================
 
 
