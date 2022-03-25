@@ -119,6 +119,10 @@ router.route('/Movies')
         }
     })
     .get(authJwtController.isAuthenticated,function(req, res) {
+        Movie.find({}, function (err, movies) {
+            if(err) {res.send(err);}
+            res.json({Movie: movies});
+        })
         if(!req.body){
             res.status(403).json({SUCCESS:false, message: "Please provide a movie to display"})
         }
