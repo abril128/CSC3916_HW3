@@ -161,6 +161,22 @@ router.route('/Movies')
             })
         }
     })
+router.route('/movies/:movieparameter')
+    .get(authJwtController.isAuthenticated,function(req, res) {
+        if(!req.body){
+            res.status(403).json({SUCCESS:false, message: "What movie to display?"})
+        }
+        else{
+            Movie.findOne({title:req.body.title}).select("title year genre actorsName").exec(function(err, movie){
+                if (movie) {
+                    res.status(200).json({success: true, message: " Movie found", Movie: movie})
+                }
+                else {
+                    res.status(404).json({success: false, message: "Movie not found"});
+                }
+            })
+        }
+    })
 
 //========================== end movie ======================
 
