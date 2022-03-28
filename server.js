@@ -88,48 +88,19 @@ router.post('/signin', function (req, res) {
 });
 //============ movie =======================
 router.route('/Movies')
-    .delete(authJwtController.isAuthenticated, function(req, res){
-        if(!req.body.title){
-            res.status(403).json({success:false, message: "Please provide a movie to be delete."});
-        }
-        else{
-            Movie.findOneAndDelete({title:req.body.title}, function(err, movie){
-                if (movie){
-                    res.status(200).json({success: true, message: "Found the movie!", Movie: movie});
-                }
-                else {
-                    res.status(404).json({success:false, message: "Movie was not found!"});
-                }
-            })
-        }
-    })
-    .put(authJwtController.isAuthenticated, function(req, res) {
-        if(!req.body.title|| !req.body.new_title){
-            res.status(403).json({SUCCESS:false, message: "Please provide a movie title to be updated along with the new title"})
-        }
-        else{
-            Movie.findOneAndUpdate({title:req.body.title}, {title :req.body.new_title}, function(err, movie){
-                if (movie) {
-                    res.status(200).json({success: true, message: "Found Movie"})
-                }
-                else {
-                    res.status(404).json({success: false, message: "Movie not found"});
-                }
-            })
-        }
-    })
     .get(authJwtController.isAuthenticated,function(req, res) {
-        Movie.find({}, function (err, movies) {
-            if(err) {res.send(err);}
-            res.json({Movie: movies});
-        })
+        // Movie.find({}, function (err, movies) {
+        //
+        //     if(err) {res.send(err);}
+        //     res.json({Movie: movies});
+        // })
         if(!req.body){
-            res.status(403).json({SUCCESS:false, message: "Please provide a movie to display"})
+            res.status(403).json({SUCCESS:false, message: "What movie to display?"})
         }
         else{
-            Movie.find({title:req.body.title}).select("title year genre actorsName").exec(function(err, movie){
+            Movie.findOne({title:req.body.title}).select("title year genre actorsName").exec(function(err, movie){
                 if (movie) {
-                    res.status(200).json({success: true, message: "The Movie was found", Movie: movie})
+                    res.status(200).json({success: true, message: " Movie found", Movie: movie})
                 }
                 else {
                     res.status(404).json({success: false, message: "Movie not found"});
@@ -156,7 +127,37 @@ router.route('/Movies')
                         return res.json(err);
                 }
             })
-            res.json({SUCCESS:true, MESSAGE: "Movie Is Created."})
+            res.json({SUCCESS:true, MESSAGE: "Movie is Created."})
+        }
+    })
+    .put(authJwtController.isAuthenticated, function(req, res) {
+        if(!req.body.title|| !req.body.new_title){
+            res.status(403).json({SUCCESS:false, message: "Please provide a movie title to be updated along with the new title"})
+        }
+        else{
+            Movie.findOneAndUpdate({title:req.body.title}, {title :req.body.new_title}, function(err, movie){
+                if (movie) {
+                    res.status(200).json({success: true, message: "Found Movie"})
+                }
+                else {
+                    res.status(404).json({success: false, message: "Movie not found"});
+                }
+            })
+        }
+    })
+    .delete(authJwtController.isAuthenticated, function(req, res){
+        if(!req.body.title){
+            res.status(403).json({success:false, message: "Please provide a movie to be delete."});
+        }
+        else{
+            Movie.findOneAndDelete({title:req.body.title}, function(err, movie){
+                if (movie){
+                    res.status(200).json({success: true, message: "Found the movie!", Movie: movie});
+                }
+                else {
+                    res.status(404).json({success:false, message: "Movie was not found!"});
+                }
+            })
         }
     })
 
