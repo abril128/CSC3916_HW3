@@ -89,13 +89,14 @@ router.post('/signin', function (req, res) {
 //============ movie =======================
 router.route('/Movies')
     .get(authJwtController.isAuthenticated,function(req, res) {
-        // Movie.find({}, function (err, movies) {
-        //
-        //     if(err) {res.send(err);}
-        //     res.json({Movie: movies});
-        // })
+
         if(!req.body){
-            res.status(403).json({SUCCESS:false, message: "What movie to display?"})
+            //res.status(403).json({SUCCESS:false, message: "What movie to display?"})
+            Movie.find({}, function (err, movies) {
+
+                if(err) {res.send(err);}
+                res.json({Movie: movies});
+            })
         }
         else{
             Movie.findOne({title:req.body.title}).select("title year genre actorsName").exec(function(err, movie){
