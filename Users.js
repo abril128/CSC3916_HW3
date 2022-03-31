@@ -11,7 +11,7 @@ try {
 }catch (error) {
     console.log("could not connect");
 }
-
+mongoose.set('useCreateIndex', true);
 
 //user schema
 const UserSchema = new Schema({
