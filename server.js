@@ -15,8 +15,8 @@ const cors = require('cors');
 const User = require('./Users');
 const Movie = require('./Movies')
 const Reviews = require('./Review');
-const crypto = require("crypto"); // tracker
-const rp = require('request-promise');//tracker
+//const crypto = require("crypto"); // tracker
+//const rp = require('request-promise');//tracker
 //
 const app = express();
 app.use(cors());
@@ -28,44 +28,6 @@ app.use(passport.initialize());
 const router = express.Router();
 
 
-
-const GA_TRACKING_ID = process.env.GA_KEY;// tracker
-
-
-
-// ========= tracker ===================
-// function trackDimension(category, action, label, value, dimension, metric) {
-//
-//     var options = { method: 'GET',
-//         url: 'https://www.google-analytics.com/collect',
-//         qs:
-//             {   // API Version.
-//                 v: '1',
-//                 // Tracking ID / Property ID.
-//                 tid: GA_TRACKING_ID,
-//                 // Random Client Identifier. Ideally, this should be a UUID that
-//                 // is associated with particular user, device, or browser instance.
-//                 cid: crypto.randomBytes(16).toString("hex"),
-//                 // Event hit type.
-//                 t: 'event',
-//                 // Event category.
-//                 ec: category,
-//                 // Event action.
-//                 ea: action,
-//                 // Event label.
-//                 el: label,
-//                 // Event value.
-//                 ev: value,
-//                 // Custom Dimension
-//                 cd1: dimension,
-//                 // Custom Metric
-//                 cm1: metric
-//             },
-//         headers:
-//             {  'Cache-Control': 'no-cache' } };
-//
-//     return rp(options);
-// }
 //======================end tracker ===================================
 function getJSONObjectForMovieRequirement(req) {
     const json = {
@@ -130,29 +92,29 @@ router.post('/signin', function (req, res) {
 });
 //============ movie =======================
 router.route('/Movies')
-    .get(authJwtController.isAuthenticated,function(req, res) {
+    // .get(authJwtController.isAuthenticated,function(req, res) {
+    //
+    //     Movie.find({}, function (err, movies) {
+    //
+    //         if(err) {res.send(err);}
+    //         res.json({Movie: movies});
+    //     })
+    //     if(!req.body){
+    //         res.status(403).json({SUCCESS:false, message: "What movie to display?"})
+    //     }
+    //     else{
+    //         Movie.findOne({title:req.body.title}).select("title year genre actorsName").exec(function(err, movie){
+    //             if (movie) {
+    //                 res.status(200).json({success: true, message: " Movie found", Movie: movie})
+    //             }
+    //             else {
+    //                 res.status(404).json({success: false, message: "Movie not found"});
+    //             }
+    //         })
+    //     }
+    // })
 
-        Movie.find({}, function (err, movies) {
-
-            if(err) {res.send(err);}
-            res.json({Movie: movies});
-        })
-        if(!req.body){
-            res.status(403).json({SUCCESS:false, message: "What movie to display?"})
-        }
-        else{
-            Movie.findOne({title:req.body.title}).select("title year genre actorsName").exec(function(err, movie){
-                if (movie) {
-                    res.status(200).json({success: true, message: " Movie found", Movie: movie})
-                }
-                else {
-                    res.status(404).json({success: false, message: "Movie not found"});
-                }
-            })
-        }
-    })
-
-    .post(authJwtController.isAuthenticated,function(req, res) {
+.post(authJwtController.isAuthenticated,function(req, res) {
         if(!req.body.title || !req.body.year || !req.body.genre || !req.body.actorsName[0] || !req.body.actorsName[1] || !req.body.actorsName[2]) {
             res.status(403).json({SUCCESS:false, message: "Error. Incorrect format "});
         }
@@ -204,65 +166,97 @@ router.route('/Movies')
             })
         }
     })
-router.route('/movies/:movieparameter')
-    .get(authJwtController.isAuthenticated,function(req, res) {
-        if(!req.body){
-            res.status(403).json({SUCCESS:false, message: "What movie to display?"})
-        }
-        else{
-            Movie.findOne({title:req.body.title}).select("title year genre actorsName").exec(function(err, movie){
-                if (movie) {
-                    res.status(200).json({success: true, message: " Movie found", Movie: movie})
-                }
-                else {
-                    res.status(404).json({success: false, message: "Movie not found"});
-                }
+    .get(authJwtController.isAuthenticated, function(req, res){
+        let review = req.query.review;
+        if(review == 'true') {
+            if (!req.body.Title) {
+                Movie.aggregate([{
+                    $match: {title: req.body.title}
+                },
+                    {
+                        $lookup: {
+                            from: "reviews",
+                            localField: "Title",
+                            foreignField: "Title",
+                            as: "reviews"
+                        }
+                    }]).exec(function (err, movie) {
+                    if (err) {
+                        return res.json(err);
+                    } else {
+                        return res.json(movie);
+                    }
+                })
+            }
+            else{
+                Movie.findOne({Title: req.body.Title}).exec(function(err, movie){
+                    return res.json(movie);
+                })
+            }
+
+        }else {
+            Movie.find({}, function(err, movies){
+                if(err)
+                    res.send(err);
+                res.json({Movie: movies});
             })
         }
-    })
+
+
+    });
+
+//router.route('/movies/:movieparameter')
+    // .get(authJwtController.isAuthenticated,function(req, res) {
+    //     if(!req.body){
+    //         res.status(403).json({SUCCESS:false, message: "What movie to display?"})
+    //     }
+    //     else{
+    //         Movie.findOne({title:req.body.title}).select("title year genre actorsName").exec(function(err, movie){
+    //             if (movie) {
+    //                 res.status(200).json({success: true, message: " Movie found", Movie: movie})
+    //             }
+    //             else {
+    //                 res.status(404).json({success: false, message: "Movie not found"});
+    //             }
+    //         })
+    //     }
+    // })
 
 
 //========================== end movie, start movie review ======================
 router.route('/Review')
-    .get(function(req, res) {
-        if(!req.body.title){
-            res.json({SUCCESS:false, message: "Please provide Movie"})
-        }
-        else if(req.body.Review === "true"){
-            Movie.findOne({title:req.body.title}, function(err, movie) {
-                if (err) {
-                    res.json({success: false, message: "Error! Movie review not found"})
-                }
-                else{
-                    Movie.aggregate([{
-                        $match: {title: req.body.title}
-                    },
-                        {
-                            $lookup: {
-                                from: "reviews",
-                                localField: "title",
-                                foreignField: "title",
-                                as: "movieReview"
-                            }
-                        }]).exec(function (err, movie) {
-                        if (err) {
-                            return res.json(err);
-                        } else {
-                            return res.json(movie);
-                        }
-                    })
-                }
-            })
-        }
-    })
+    // .get(function(req, res) {
+    //     if(!req.body.title){
+    //         res.json({SUCCESS:false, message: "Please provide Movie"})
+    //     }
+    //     else if(req.body.Review === "true"){
+    //         Movie.findOne({title:req.body.title}, function(err, movie) {
+    //             if (err) {
+    //                 res.json({success: false, message: "Error! Movie review not found"})
+    //             }
+    //             else{
+    //                 Movie.aggregate([{
+    //                     $match: {title: req.body.title}
+    //                 },
+    //                     {
+    //                         $lookup: {
+    //                             from: "reviews",
+    //                             localField: "title",
+    //                             foreignField: "title",
+    //                             as: "movieReview"
+    //                         }
+    //                     }]).exec(function (err, movie) {
+    //                     if (err) {
+    //                         return res.json(err);
+    //                     } else {
+    //                         return res.json(movie);
+    //                     }
+    //                 })
+    //             }
+    //         })
+    //     }
+    // })
     .post(authJwtController.isAuthenticated,function(req, res) {
-
-        // // Event value must be numeric.
-        // trackDimension('Feedback', 'Rating', 'Feedback for Movie', '3', 'Guardian\'s of the Galaxy 2', '1')
-        //     .then(function (response) {
-        //         console.log(response.body);
-        //         res.status(200).send('Event tracked.').end();
-        //     })
 
         if(!req.body.title || !req.body.reviewName || !req.body.quote || !req.body.rating) {
             res.status(403).json({SUCCESS:false, message: "Error. Incorrect format"});
@@ -285,18 +279,24 @@ router.route('/Review')
             res.json({SUCCESS:true, MESSAGE: "Movie review created."})
         }
     })
-
-
-
-// router.route('/test')
-//     .get(function (req, res) {
-//         // Event value must be numeric.
-//         trackDimension('Feedback', 'Rating', 'Feedback for Movie', '3', 'Guardian\'s of the Galaxy 2', '1')
-//             .then(function (response) {
-//                 console.log(response.body);
-//                 res.status(200).send('Event tracked.').end();
-//             })
-//     });
+    .get(authJwtController.isAuthenticated, async (req, res) => {
+        try{
+            if (!req.body.Title) throw 'Please provide the title'
+            const movie = req.body.Title;
+            const reviews = await Review.find({Title: movie}).select('_id Rating').lean().exec();
+            if (!reviews) throw 'No review for ${movie}';
+            res.status(200).json({success: true, Review: reviews});
+        }
+        catch(errMsg){
+            if (errMsg.message){
+                res.status(400).json({success: false, msg: 'Database error'});
+                console.log(errMsg.message);
+            }
+            else{
+                res.status(400).json({success: false, msg: errMsg});
+            }
+        }
+    });
 
 //========================================================
 
