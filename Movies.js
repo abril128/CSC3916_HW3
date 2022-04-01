@@ -13,7 +13,7 @@ try {
 //mongoose.set('useCreateIndex', true);
 
 //get the schemas
-var MovieSchema = new Schema ({
+const MovieSchema = new Schema({
     title: {
         type: String,
         required: true,
@@ -27,9 +27,9 @@ var MovieSchema = new Schema ({
         required: true,
     },
     actorsName: [
-        {actorName : {type: String, required: true}, characterName: {type :String, required: true}},
-        {actorName : {type: String, required: true}, characterName: {type :String, required: true}},
-        {actorName : {type: String, required: true}, characterName: {type :String, required: true}}
+        {actorName: {type: String, required: true}, characterName: {type: String, required: true}},
+        {actorName: {type: String, required: true}, characterName: {type: String, required: true}},
+        {actorName: {type: String, required: true}, characterName: {type: String, required: true}}
     ]
 });
 
