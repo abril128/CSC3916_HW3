@@ -166,19 +166,25 @@ router.route('/Movies')
             })
         }
     })
-    .get(authJwtController.isAuthenticated, function(req, res){
-        let review = req.query.review;
-        if(review == 'true') {
-            if (!req.body.title) {
+.get(function(req, res) {
+    if(!req.body.title){
+        res.json({SUCCESS:false, message: "Please provide Movie"})
+    }
+    else if(req.body.Review === "true"){
+        Movie.findOne({title:req.body.title}, function(err, movie) {
+            if (err) {
+                res.json({success: false, message: "Error! Movie review not found"})
+            }
+            else{
                 Movie.aggregate([{
                     $match: {title: req.body.title}
                 },
                     {
                         $lookup: {
                             from: "reviews",
-                            localField: "Title",
-                            foreignField: "Title",
-                            as: "reviews"
+                            localField: "title",
+                            foreignField: "title",
+                            as: "movieReview"
                         }
                     }]).exec(function (err, movie) {
                     if (err) {
@@ -188,23 +194,9 @@ router.route('/Movies')
                     }
                 })
             }
-            else{
-                Movie.findOne({title: req.body.title}).exec(function(err, movie){
-                    return res.json(movie);
-                })
-            }
-
-        }else {
-            Movie.find({}, function(err, movies){
-                if(err)
-                    res.send(err);
-                res.json({Movie: movies});
-            })
-        }
-
-
-    });
-
+        })
+    }
+});
 //router.route('/movies/:movieparameter')
     // .get(authJwtController.isAuthenticated,function(req, res) {
     //     if(!req.body){
