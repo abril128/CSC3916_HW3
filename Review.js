@@ -13,7 +13,7 @@ try {
 //mongoose.set('useCreateIndex', true);
 
 //Review schema
-var ReviewSchema = new Schema ({
+const ReviewSchema = new Schema({
     title: {type: String, required: true,},
     reviewName: {type: String, required: true,},
     quote: {type: String, required: true,},

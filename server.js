@@ -196,7 +196,7 @@ router.route('/Movies')
         else{
             Movie.findOneAndDelete({title:req.body.title}, function(err, movie){
                 if (movie){
-                    res.status(200).json({success: true, message: "Found the movie!", Movie: movie});
+                    res.status(200).json({success: true, message: "Movie Deleted!", Movie: movie});
                 }
                 else {
                     res.status(404).json({success:false, message: "Movie was not found!"});
