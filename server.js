@@ -169,7 +169,7 @@ router.route('/Movies')
     .get(authJwtController.isAuthenticated, function(req, res){
         let review = req.query.review;
         if(review == 'true') {
-            if (!req.body.Title) {
+            if (!req.body.title) {
                 Movie.aggregate([{
                     $match: {title: req.body.title}
                 },
@@ -189,7 +189,7 @@ router.route('/Movies')
                 })
             }
             else{
-                Movie.findOne({Title: req.body.Title}).exec(function(err, movie){
+                Movie.findOne({title: req.body.title}).exec(function(err, movie){
                     return res.json(movie);
                 })
             }
@@ -281,8 +281,8 @@ router.route('/Review')
     })
     .get(authJwtController.isAuthenticated, async (req, res) => {
         try{
-            if (!req.body.Title) throw 'Please provide the title'
-            const movie = req.body.Title;
+            if (!req.body.title) throw 'Please provide the title'
+            const movie = req.body.title;
             const reviews = await Review.find({Title: movie}).select('_id Rating').lean().exec();
             if (!reviews) throw 'No review for ${movie}';
             res.status(200).json({success: true, Review: reviews});
