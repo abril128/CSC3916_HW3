@@ -193,7 +193,7 @@ router.route('/Movies')
             })
         }
     });
-router.route('/movies/:movieparameter')
+router.route('/movies/:title')
     // .get(authJwtController.isAuthenticated,function(req, res) {
     //     if(!req.body){
     //         res.status(403).json({SUCCESS:false, message: "What movie to display?"})
@@ -222,7 +222,7 @@ router.route('/movies/:movieparameter')
                         from: 'reviews',
                         localField: 'title',
                         foreignField: 'movieTitle',
-                        as: 'reviews'
+                        as: "movieReview"
                     }
                 },
                 {
