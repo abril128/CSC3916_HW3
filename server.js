@@ -166,57 +166,23 @@ router.route('/Movies')
             })
         }
     });
-router.route('/movies/:title')
-    // .get(authJwtController.isAuthenticated,function(req, res) {
-    //     if(!req.body){
-    //         res.status(403).json({SUCCESS:false, message: "What movie to display?"})
-    //     }
-    //     else{
-    //         Movie.findOne({title:req.body.title}).select("title year genre actorsName").exec(function(err, movie){
-    //             if (movie) {
-    //                 res.status(200).json({success: true, message: " Movie found", Movie: movie})
-    //             }
-    //             else {
-    //                 res.status(404).json({success: false, message: "Movie not found"});
-    //             }
-    //         })
-    //     }
-    // })
-    .get(authJwtController.isAuthenticated, function(req, res){
-        let review = req.query.reviewName;
-        if(review == 'true') {
-            if (!req.body.title) {
-                Movie.aggregate([{$match: {title: req.body.title}},
-                    {
-                        $lookup: {
-                            from: "reviews",
-                            localField: "Title",
-                            foreignField: "Title",
-                            as: "reviews"
-                        }
-                    }]).exec(function (err, movie) {
-                    if (err) {
-                        return res.json(err);
-                    } else {
-                        return res.json(movie);
-                    }
-                })
-            }
-            else{
-                Movie.findOne({Title: req.body.Title}).exec(function(err, movie){
-                    return res.json(movie);
-                })
-            }
-
-        }else {
-            Movie.find({}, function(err, movies){
-                if(err)
-                    res.send(err);
-                res.json({Movie: movies});
+router.route('/movies/:Movie_title')
+    .get(authJwtController.isAuthenticated,function(req, res) {
+        if(!req.body){
+            res.status(403).json({SUCCESS:false, message: "What movie to display?"})
+        }
+        else{
+            Movie.findOne({title:req.body.title}).select("title year genre actorsName").exec(function(err, movie){
+                if (movie) {
+                    res.status(200).json({success: true, message: " Movie found", Movie: movie})
+                }
+                else {
+                    res.status(404).json({success: false, message: "Movie not found"});
+                }
             })
         }
+    })
 
-    });
 //========================== end movie, start movie review ======================
 router.route('/Review')
 
@@ -252,6 +218,41 @@ router.route('/Review')
 
 
 //========================================================
+router.route('/Review/:title')
+    .get(function (req, res) {
+        if (req.query.reviewName === "true"){
+            Movie.aggregate([
+                {
+                    $lookup:
+                        {
+                            from: 'reviews',
+                            localField: 'title',
+                            foreignField: 'title',
+                            as: 'movie_reviews'
+                        }
+                }
+            ]).then(entries =>
+                entries.filter(item => item.title === req.params.title).forEach(item => res.json(item)));
+            return;
+        }
+        Movie.findOne( {title: req.params.title}).select('title releaseYear genre actors').exec(function (err, movie) {
+            if (err) {
+                res.send(err);
+            }
+            if (movie === null) {
+                res.send({success: false, message: 'Movie does not exist in the Database.'});
+                return;
+            }
+            let resMovie = {
+                title: movie.title,
+                releaseYear: movie.releaseYear,
+                genre: movie.genre,
+                actors: movie.actors
+            }
+            res.json(resMovie);
+        });
+    })
+
 
 
 app.use('/', router);
