@@ -213,9 +213,8 @@ router.route('/movies/:title')
         if ('reviews' in req.query && req.query['reviews'] === 'true') {
             Movie.aggregate([
                 {
-                    $match: {
-                        title: req.params['title']
-                    }
+                    $match: {title: req.body.title}
+
                 },
                 {
                     $lookup: {
