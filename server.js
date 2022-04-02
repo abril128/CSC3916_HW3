@@ -92,52 +92,25 @@ router.post('/signin', function (req, res) {
 });
 //============ movie =======================
 router.route('/Movies')
-    // .get(authJwtController.isAuthenticated,function(req, res) {
-    //
-    //     Movie.find({}, function (err, movies) {
-    //
-    //         if(err) {res.send(err);}
-    //         res.json({Movie: movies});
-    //     })
-    //     if(!req.body){
-    //         res.status(403).json({SUCCESS:false, message: "What movie to display?"})
-    //     }
-    //     else{
-    //         Movie.findOne({title:req.body.title}).select("title year genre actorsName").exec(function(err, movie){
-    //             if (movie) {
-    //                 res.status(200).json({success: true, message: " Movie found", Movie: movie})
-    //             }
-    //             else {
-    //                 res.status(404).json({success: false, message: "Movie not found"});
-    //             }
-    //         })
-    //     }
-    // })
-    .get(authJwtController.isAuthenticated, function (req, res) {
-        if ('reviews' in req.query && req.query['reviews'] === 'true') {
-            Movie.aggregate([
-                {
-                    $lookup: {
-                        from: 'reviews',
-                        localField: 'title',
-                        foreignField: 'movieTitle',
-                        as: 'reviews'
-                    }
-                },
-                {
-                    $addFields: {
-                        avgRating: { $avg: '$reviews.rating' }
-                    }
+    .get(authJwtController.isAuthenticated,function(req, res) {
+
+        Movie.find({}, function (err, movies) {
+
+            if(err) {res.send(err);}
+            res.json({Movie: movies});
+        })
+        if(!req.body){
+            res.status(403).json({SUCCESS:false, message: "What movie to display?"})
+        }
+        else{
+            Movie.findOne({title:req.body.title}).select("title year genre actorsName").exec(function(err, movie){
+                if (movie) {
+                    res.status(200).json({success: true, message: " Movie found", Movie: movie})
                 }
-            ]).exec(function (err, movies) {
-                if (err) return res.status(400).json(err);
-                else res.json(movies);
-            });
-        } else {
-            Movie.find({}, (err, movies) => {
-                if (err) return res.status(400).json(err);
-                else res.json(movies);
-            });
+                else {
+                    res.status(404).json({success: false, message: "Movie not found"});
+                }
+            })
         }
     })
 
@@ -212,10 +185,8 @@ router.route('/movies/:title')
     .get(authJwtController.isAuthenticated, function(req, res){
         let review = req.query.reviewName;
         if(review == 'true') {
-            if (!req.body.Title) {
-                Movie.aggregate([{
-                    $match: {title: req.body.title}
-                },
+            if (!req.body.title) {
+                Movie.aggregate([{$match: {title: req.body.title}},
                     {
                         $lookup: {
                             from: "reviews",
@@ -244,7 +215,6 @@ router.route('/movies/:title')
                 res.json({Movie: movies});
             })
         }
-
 
     });
 //========================== end movie, start movie review ======================
