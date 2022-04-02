@@ -220,7 +220,7 @@ router.route('/Review/:title')
                 entries.filter(item => item.title === req.params.title).forEach(item => res.json(item)));
             return;
         }
-        Movie.findOne( {title: req.params.title}).select('title releaseYear genre actors').exec(function (err, movie) {
+        Movie.findOne( {title: req.params.title}).select("title year genre actorsName").exec(function (err, movie) {
             if (err) {
                 res.send(err);
             }
