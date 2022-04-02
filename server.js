@@ -237,7 +237,7 @@ router.route('/Review/:title')
     //         res.json(newMovie);
     //     });
     // })
-    .get(authJwtController.isAuthenticated, function (req, res) {
+    .get(function (req, res) {
         if ('reviews' in req.query && req.query['reviews'] === 'true') {
             Movie.aggregate([
                 {
