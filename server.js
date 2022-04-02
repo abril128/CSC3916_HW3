@@ -228,13 +228,13 @@ router.route('/Review/:title')
                 res.send({success: false, message: 'Movie does not exist in the Database.'});
                 return;
             }
-            let resMovie = {
+            let newMovie = {
                 title: movie.title,
-                releaseYear: movie.releaseYear,
+                year: movie.year,
                 genre: movie.genre,
-                actors: movie.actors
+                actorsName: movie.actorsName
             }
-            res.json(resMovie);
+            res.json(newMovie);
         });
     })
 
