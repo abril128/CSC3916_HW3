@@ -204,40 +204,7 @@ router.route('/Review')
 
 //========================================================
 router.route('/Review/:title')
-    //  .get(function (req, res) {
-    //     if (req.query.reviews === "true"){
-    //         Movie.aggregate([
-    //             {
-    //                 $lookup:
-    //                     {
-    //                         from: 'reviews',
-    //                         localField: 'title',
-    //                         foreignField: 'title',
-    //                         as: 'reviewName'
-    //                     }
-    //             }
-    //         ]).then(entries =>
-    //             entries.filter(item => item.title === req.params.title).forEach(item => res.json(item)));
-    //         return;
-    //     }
-    //     Movie.findOne( {title: req.params.title}).select("title year genre actorsName").exec(function (err, movie) {
-    //         if (err) {
-    //             res.send(err);
-    //         }
-    //         if (movie === null) {
-    //             res.send({success: false, message: 'Movie does not exist in the Database.'});
-    //             return;
-    //         }
-    //         let newMovie = {
-    //             title: movie.title,
-    //             year: movie.year,
-    //             genre: movie.genre,
-    //             actorsName: movie.actorsName
-    //         }
-    //         res.json(newMovie);
-    //     });
-    // })
-    .get(function (req, res) {
+    .get(authJwtController.isAuthenticated, function (req, res) {
         if ('reviews' in req.query && req.query['reviews'] === 'true') {
             Movie.aggregate([
                 {
