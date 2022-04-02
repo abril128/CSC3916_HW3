@@ -92,26 +92,11 @@ router.post('/signin', function (req, res) {
 });
 //============ movie =======================
 router.route('/Movies')
-    .get(authJwtController.isAuthenticated,function(req, res) {
-
-        Movie.find({}, function (err, movies) {
-
-            if(err) {res.send(err);}
-            res.json({Movie: movies});
-        })
-        if(!req.body){
-            res.status(403).json({SUCCESS:false, message: "What movie to display?"})
-        }
-        else{
-            Movie.findOne({title:req.body.title}).select("title year genre actorsName").exec(function(err, movie){
-                if (movie) {
-                    res.status(200).json({success: true, message: " Movie found", Movie: movie})
-                }
-                else {
-                    res.status(404).json({success: false, message: "Movie not found"});
-                }
-            })
-        }
+    .get(authJwtController.isAuthenticated, function (req, res) {
+        Movie.find({}, (err, movies) => {
+            if (err) return res.status(400).json(err);
+            else res.json(movies);
+        });
     })
 
 .post(authJwtController.isAuthenticated,function(req, res) {
@@ -220,7 +205,7 @@ router.route('/Review')
 //========================================================
 router.route('/Review/:title')
     .get(function (req, res) {
-        if (req.query.reviewName === "true"){
+        if (req.query.title === "true"){
             Movie.aggregate([
                 {
                     $lookup:
