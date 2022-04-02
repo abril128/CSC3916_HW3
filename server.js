@@ -229,7 +229,7 @@ router.route('/Review/:title')
                 //console.log("match movies", movies.filter((m) => m.title === req.params['title']));
                 if (err) return res.status(400).json(err);
                 else if (movies.length === 0)
-                    return res.status(400).json({ success: false, msg: 'No movie with that title exists.' });
+                    return res.status(400).json({ success: false, msg: 'Movie with that title does not exists.' });
                 else res.json(movies[0]);
             });
         } else {
