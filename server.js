@@ -209,74 +209,47 @@ router.route('/movies/:title')
     //         })
     //     }
     // })
-    .get(authJwtController.isAuthenticated, function (req, res) {
-        if ('reviews' in req.query && req.query['reviews'] === 'true') {
-            Movie.aggregate([
-                {
+    .get(authJwtController.isAuthenticated, function(req, res){
+        let review = req.query.reviewName;
+        if(review == 'true') {
+            if (!req.body.Title) {
+                Movie.aggregate([{
                     $match: {title: req.body.title}
+                },
+                    {
+                        $lookup: {
+                            from: "reviews",
+                            localField: "Title",
+                            foreignField: "Title",
+                            as: "reviews"
+                        }
+                    }]).exec(function (err, movie) {
+                    if (err) {
+                        return res.json(err);
+                    } else {
+                        return res.json(movie);
+                    }
+                })
+            }
+            else{
+                Movie.findOne({Title: req.body.Title}).exec(function(err, movie){
+                    return res.json(movie);
+                })
+            }
 
-                },
-                {
-                    $lookup: {
-                        from: 'reviews',
-                        localField: 'title',
-                        foreignField: 'movieTitle',
-                        as: "movieReview"
-                    }
-                },
-                {
-                    $addFields: {
-                        avgRating: { $avg: '$reviews.rating' }
-                    }
-                }
-            ]).exec(function (err, movies) {
-                if (err) return res.status(400).json(err);
-                else if (movies.length === 0)
-                    return res.status(400).json({ success: false, msg: 'No movie with that title exists.' });
-                else res.json(movies[0]);
-            });
-        } else {
-            Movie.findOne({ title: req.params['title'] }, (err, movie) => {
-                if (err) res.status(400).json(err);
-                else if (!movie)
-                    return res.status(400).json({ success: false, msg: 'No movie with that title exists.' });
-                else res.json(movie);
-            });
+        }else {
+            Movie.find({}, function(err, movies){
+                if(err)
+                    res.send(err);
+                res.json({Movie: movies});
+            })
         }
-    })
+
+
+    });
 //========================== end movie, start movie review ======================
 router.route('/Review')
-    // .get(function(req, res) {
-    //     if(!req.query.title){
-    //         res.json({SUCCESS:false, message: "Please provide Movie"})
-    //     }
-    //     else if(req.body.Review === "true"){
-    //         Movie.findOne({title:req.body.title}, function(err, movie) {
-    //             if (err) {
-    //                 res.json({success: false, message: "Error! Movie review not found"})
-    //             }
-    //             else{
-    //                 Movie.aggregate([{
-    //                     $match: {title: req.body.title}
-    //                 },
-    //                     {
-    //                         $lookup: {
-    //                             from: "reviews",
-    //                             localField: "title",
-    //                             foreignField: "title",
-    //                             as: "movieReview"
-    //                         }
-    //                     }]).exec(function (err, movie) {
-    //                     if (err) {
-    //                         return res.json(err);
-    //                     } else {
-    //                         return res.json(movie);
-    //                     }
-    //                 })
-    //             }
-    //         })
-    //     }
-    // })
+
     .get(authJwtController.isAuthenticated, function (req, res) {
         Reviews.find({}, (err, reviews) => {
             if (err) return res.status(400).json(err);
