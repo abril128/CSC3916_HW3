@@ -204,47 +204,14 @@ router.route('/Review')
 
 //========================================================
 router.route('/Review/:title')
-    // .get(authJwtController.isAuthenticated, function (req, res) {
-    //     if ('reviews' in req.query && req.query['reviews'] === 'true'){
-    //         Movie.aggregate([
-    //             {
-    //                 $lookup:
-    //                     {
-    //                         from: 'reviews',
-    //                         localField: 'title',
-    //                         foreignField: 'title',
-    //                         as: 'movie_and_reviews'
-    //                     }
-    //             }
-    //         ]).then(entries =>
-    //             entries.filter(item => item.title === req.query.title).forEach(item => res.json(item)));
-    //         return;
-    //     }
-    //     Movie.findOne( {title: req.query.title}).select('title year genre actorsName').exec(function (err, movie) {
-    //         if (err) {
-    //             res.send(err);
-    //         }
-    //         if (movie === null) {
-    //             res.send({success: false, message: 'Movie does not exist in the Database.'});
-    //             return;
-    //         }
-    //         let new_Movie = {
-    //             title: movie.title,
-    //             year: movie.year,
-    //             genre: movie.genre,
-    //             actorsName: movie.actorsName
-    //         }
-    //         res.json(new_Movie);
-    //     });
-    // })
     .get(function(req, res) {
         if(!req.body.title){
-            res.json({SUCCESS:false, message: "Please provide a review to display"})
+            res.json({SUCCESS:false, message: "Please provide which Movie reviews to display"})
         }
         else if(req.query.reviews === "true"){
             Movie.findOne({title:req.body.title}, function(err, movie) {
                 if (err) {
-                    res.json({success: false, message: "Error! The review was not found"})
+                    res.json({success: false, message: "Error! Movie title not present "})
                 }
                 else{
                     Movie.aggregate([{
