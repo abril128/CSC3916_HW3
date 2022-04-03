@@ -238,7 +238,7 @@ router.route('/Review/:title')
     //     });
     // })
     .get(authJwtController.isAuthenticated, function (req, res) {
-        if (req.query && req.query.reviews && req.query.reviews === "true") {
+        if (req.query && req.query.review && req.query.review === "true") {
             Movie.findOne({title: req.params.title}, function (err, movies) {
                 if (err) {
                     return res.status(403).json({success: false, message: "Unable to get reviews for title passed in"});
