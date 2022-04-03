@@ -205,7 +205,7 @@ router.route('/Review')
 //========================================================
 router.route('/Review/:title')
     .get(function (req, res) {
-        if (req.query.rating === "true"){
+        if (req.query.review === "true"){
             Movie.aggregate([
                 {
                     $lookup:
@@ -213,14 +213,14 @@ router.route('/Review/:title')
                             from: 'reviews',
                             localField: 'title',
                             foreignField: 'title',
-                            as: 'reviews'
+                            as: 'movie_and_reviews'
                         }
                 }
             ]).then(entries =>
-                entries.filter(item => item.title === req.body.title).forEach(item => res.json(item)));
+                entries.filter(item => item.title === req.query.title).forEach(item => res.json(item)));
             return;
         }
-        Movie.findOne( {title: req.body.title}).select('title year genre actorsName').exec(function (err, movie) {
+        Movie.findOne( {title: req.query.title}).select('title year genre actorsName').exec(function (err, movie) {
             if (err) {
                 res.send(err);
             }
