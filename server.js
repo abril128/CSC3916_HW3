@@ -3,7 +3,7 @@ CSC3916 HW2
 File: Server.js
 Description: Web API scaffolding for Movie API
  */
-
+const mongoose = require('mongoose');
 const express = require('express');
 //var http = require('http');
 const bodyParser = require('body-parser');
@@ -204,38 +204,71 @@ router.route('/Review')
 
 //========================================================
 router.route('/Review/:title')
+    // .get(authJwtController.isAuthenticated, function (req, res) {
+    //     if ('reviews' in req.query && req.query['reviews'] === 'true'){
+    //         Movie.aggregate([
+    //             {
+    //                 $lookup:
+    //                     {
+    //                         from: 'reviews',
+    //                         localField: 'title',
+    //                         foreignField: 'title',
+    //                         as: 'movie_and_reviews'
+    //                     }
+    //             }
+    //         ]).then(entries =>
+    //             entries.filter(item => item.title === req.query.title).forEach(item => res.json(item)));
+    //         return;
+    //     }
+    //     Movie.findOne( {title: req.query.title}).select('title year genre actorsName').exec(function (err, movie) {
+    //         if (err) {
+    //             res.send(err);
+    //         }
+    //         if (movie === null) {
+    //             res.send({success: false, message: 'Movie does not exist in the Database.'});
+    //             return;
+    //         }
+    //         let new_Movie = {
+    //             title: movie.title,
+    //             year: movie.year,
+    //             genre: movie.genre,
+    //             actorsName: movie.actorsName
+    //         }
+    //         res.json(new_Movie);
+    //     });
+    // })
     .get(authJwtController.isAuthenticated, function (req, res) {
-        if ('reviews' in req.query && req.query['reviews'] === 'true'){
-            Movie.aggregate([
-                {
-                    $lookup:
-                        {
+        if (req.query && req.query.reviews && req.query.reviews === "true") {
+            Movie.findOne({title: req.params.title}, function (err, movies) {
+                if (err) {
+                    return res.status(403).json({success: false, message: "Unable to get reviews for title passed in"});
+                } else if (!movies) {
+                    return res.status(403).json({success: false, message: "Unable to find title passed in."});
+                } else {
+
+                    Movie.aggregate()
+                        .match({_id: mongoose.Types.ObjectId(movies._id)})
+                        .lookup({
                             from: 'reviews',
                             localField: 'title',
                             foreignField: 'title',
-                            as: 'movie_and_reviews'
-                        }
+                            as: 'movie_and_reviews'})
+                        .addFields({averaged_rating: {$avg: "$reviews.rating"}})
+                        .exec(function (err, movies) {
+                            if (err) {
+                                res.status(500).send(err);
+                            }
+                            else {
+                                res.json(movies);
+                            }
+                        })
                 }
-            ]).then(entries =>
-                entries.filter(item => item.title === req.query.title).forEach(item => res.json(item)));
-            return;
+            })
+        } else {
+
+            res = res.status(200);
+            res.json({message: 'Reviews not shown.'});
         }
-        Movie.findOne( {title: req.query.title}).select('title year genre actorsName').exec(function (err, movie) {
-            if (err) {
-                res.send(err);
-            }
-            if (movie === null) {
-                res.send({success: false, message: 'Movie does not exist in the Database.'});
-                return;
-            }
-            let new_Movie = {
-                title: movie.title,
-                year: movie.year,
-                genre: movie.genre,
-                actorsName: movie.actorsName
-            }
-            res.json(new_Movie);
-        });
     })
 app.use('/', router);
 //console.log("http://localhost:8080/test");// tracker
