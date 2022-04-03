@@ -205,8 +205,8 @@ router.route('/Review')
 //========================================================
 router.route('/Review/:title')
     .get(function (req, res) {
-        if (req.query.reviews === "true"){
-            movies.aggregate([
+        if ('reviews' in req.query && req.query['reviews'] === 'true'){
+            Movie.aggregate([
                 {
                     $lookup:
                         {
