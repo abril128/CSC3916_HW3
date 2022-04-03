@@ -237,39 +237,38 @@ router.route('/Review/:title')
     //         res.json(new_Movie);
     //     });
     // })
-    .get( function (req, res) {
-        if (req.query && req.query.reviews && req.query.reviews === "true") {
-            Movie.findOne({title: req.params.title}, function (err, movies) {
+    .get(function(req, res) {
+        if(!req.body.title){
+            res.json({SUCCESS:false, message: "Please provide a review to display"})
+        }
+        else if(req.query.reviews === "true"){
+            Movie.findOne({title:req.body.title}, function(err, movie) {
                 if (err) {
-                    return res.status(403).json({success: false, message: "Unable to get reviews for title passed in"});
-                } else if (!movies) {
-                    return res.status(403).json({success: false, message: "Unable to find title passed in."});
-                } else {
-
-                    Movie.aggregate()
-                        .match({_id: mongoose.Types.ObjectId(movies._id)})
-                        .lookup({
-                            from: 'reviews',
-                            localField: 'title',
-                            foreignField: 'title',
-                            as: 'movie_and_reviews'})
-                        .addFields({averaged_rating: {$avg: "$reviews.rating"}})
-                        .exec(function (err, movies) {
-                            if (err) {
-                                res.status(500).send(err);
+                    res.json({success: false, message: "Error! The review was not found"})
+                }
+                else{
+                    Movie.aggregate([{
+                        $match: {title: req.body.title}
+                    },
+                        {
+                            $lookup: {
+                                from: "reviews",
+                                localField: "title",
+                                foreignField: "title",
+                                as: "movieReview"
                             }
-                            else {
-                                res.json(movies);
-                            }
-                        })
+                        }]).exec(function (err, movie) {
+                        if (err) {
+                            return res.json(err);
+                        } else {
+                            return res.json(movie);
+                        }
+                    })
                 }
             })
-        } else {
-
-            res = res.status(200);
-            res.json({message: 'Reviews not shown.'});
         }
     })
+
 app.use('/', router);
 //console.log("http://localhost:8080/test");// tracker
 app.listen(process.env.PORT || 8080);
