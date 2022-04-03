@@ -237,8 +237,8 @@ router.route('/Review/:title')
     //         res.json(new_Movie);
     //     });
     // })
-    .get(authJwtController.isAuthenticated, function (req, res) {
-        if (req.query && req.query.rating && req.query.rating === "true") {
+    .get( function (req, res) {
+        if (req.query && req.query.reviews && req.query.reviews === "true") {
             Movie.findOne({title: req.params.title}, function (err, movies) {
                 if (err) {
                     return res.status(403).json({success: false, message: "Unable to get reviews for title passed in"});
