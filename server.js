@@ -204,7 +204,7 @@ router.route('/Review')
 
 //========================================================
 router.route('/Review/:title')
-    .get(function (req, res) {
+    .get(authJwtController.isAuthenticated, function (req, res) {
         if ('reviews' in req.query && req.query['reviews'] === 'true'){
             Movie.aggregate([
                 {
