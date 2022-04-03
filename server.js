@@ -204,44 +204,76 @@ router.route('/Review')
 
 //========================================================
 router.route('/Review/:title')
+    // .get(function (req, res) {
+    //     if ('reviews' in req.query && req.query['reviews'] === 'true') {
+    //         Movie.aggregate([
+    //             {
+    //                 $match: {
+    //                     title: req.params['title']
+    //                 }
+    //             },
+    //             {
+    //                 $lookup: {
+    //                     from: 'reviews',
+    //                     localField: 'title',
+    //                     foreignField: 'movieTitle',
+    //                     as: 'reviews'
+    //                 }
+    //             },
+    //             {
+    //                 $addFields: {
+    //                     avgRating: { $avg: '$reviews.rating' }
+    //                 }
+    //             }
+    //         ]).exec(function (err, movies) {
+    //             //console.log("match movies", movies.filter((m) => m.title === req.params['title']));
+    //             if (err) return res.status(400).json(err);
+    //             else if (movies.length === 0)
+    //                 return res.status(400).json({ success: false, msg: 'Movie with that title does not exists.' });
+    //             else res.json(movies[0]);
+    //         });
+    //     } else {
+    //         Movie.findOne({ title: req.params['title'] }, (err, movie) => {
+    //             if (err) res.status(400).json(err);
+    //             else if (!movie)
+    //                 return res.status(400).json({ success: false, msg: 'No movie with that title exists.' });
+    //             else res.json(movie);
+    //         });
+    //     }
+    // })
     .get(function (req, res) {
-        if ('reviews' in req.query && req.query['reviews'] === 'true') {
+        if (req.query.rating === "true"){
             Movie.aggregate([
                 {
-                    $match: {
-                        title: req.params['title']
-                    }
-                },
-                {
-                    $lookup: {
-                        from: 'reviews',
-                        localField: 'title',
-                        foreignField: 'movieTitle',
-                        as: 'reviews'
-                    }
-                },
-                {
-                    $addFields: {
-                        avgRating: { $avg: '$reviews.rating' }
-                    }
+                    $lookup:
+                        {
+                            from: 'reviews',
+                            localField: 'title',
+                            foreignField: 'title',
+                            as: 'reviews'
+                        }
                 }
-            ]).exec(function (err, movies) {
-                //console.log("match movies", movies.filter((m) => m.title === req.params['title']));
-                if (err) return res.status(400).json(err);
-                else if (movies.length === 0)
-                    return res.status(400).json({ success: false, msg: 'Movie with that title does not exists.' });
-                else res.json(movies[0]);
-            });
-        } else {
-            Movie.findOne({ title: req.params['title'] }, (err, movie) => {
-                if (err) res.status(400).json(err);
-                else if (!movie)
-                    return res.status(400).json({ success: false, msg: 'No movie with that title exists.' });
-                else res.json(movie);
-            });
+            ]).then(entries =>
+                entries.filter(item => item.title === req.params.title).forEach(item => res.json(item)));
+            return;
         }
+        Movie.findOne( {title: req.params.title}).select('title year genre actorsName').exec(function (err, movie) {
+            if (err) {
+                res.send(err);
+            }
+            if (movie === null) {
+                res.send({success: false, message: 'Movie does not exist in the Database.'});
+                return;
+            }
+            let new_Movie = {
+                title: movie.title,
+                year: movie.year,
+                genre: movie.genre,
+                actorsName: movie.actorsName
+            }
+            res.json(new_Movie);
+        });
     })
-
 app.use('/', router);
 //console.log("http://localhost:8080/test");// tracker
 app.listen(process.env.PORT || 8080);
