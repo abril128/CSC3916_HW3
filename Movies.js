@@ -30,7 +30,8 @@ const MovieSchema = new Schema({
         {actorName: {type: String, required: true}, characterName: {type: String, required: true}},
         {actorName: {type: String, required: true}, characterName: {type: String, required: true}},
         {actorName: {type: String, required: true}, characterName: {type: String, required: true}}
-    ]
+    ],
+    imageUrl: {type: String, required: true}
 });
 
 //exporting the files

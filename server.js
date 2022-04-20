@@ -109,6 +109,7 @@ router.route('/Movies')
             movie.year = req.body.year;
             movie.genre = req.body.genre;
             movie.actorsName = req.body.actorsName;
+            movie.imageURL = req.body.imageURL;
 
             movie.save(function(err){
                 if (err){
@@ -188,6 +189,7 @@ router.route('/Review')
             review.reviewName = req.body.reviewName;
             review.quote = req.body.quote;
             review.rating = req.body.rating;
+
 
             review.save(function(err){
                 if (err){
